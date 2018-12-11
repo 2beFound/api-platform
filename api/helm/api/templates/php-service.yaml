@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: php
+  name: {{ template "name" . }}-php
   labels:
     app: {{ template "name" . }}-php
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}

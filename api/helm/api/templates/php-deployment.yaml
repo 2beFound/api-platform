@@ -15,7 +15,33 @@ spec:
         app: {{ template "name" . }}-php
         release: {{ .Release.Name }}
     spec:
+      volumes:
+        - name: cloudsql-proxy
+          secret:
+            defaulMode: 420
+            secretName: <SECRETNAME>
+    spec:
       containers:
+        - command:
+          - /cloud_sql_proxy
+          - --dir=/cloudsql
+          - -credential_file=/secrets/cloudsql/credentials.json
+          - -instances={{ .Values.gcloud_project_id }}:europe-west1:{{ .Values.db_name }}=tcp:5432
+          image: b.gcr.io/cloudsql-docker/gce-proxy:1.13
+          imagePullPolicy: Always
+          name: cloudsql-proxy
+          resources:
+            requests:
+              memory: "128M"
+              cpu: "0.15"
+            limits:
+              memory: "1G"
+              cpu: "0.15"
+          volumeMounts:
+            - mountPath: /secrets/cloudsql
+              name: cloudsql-proxy
+              readOnly: true
+
         - name: {{ .Chart.Name }}-php
           image: "{{ .Values.php.repository }}:{{ .Values.php.tag }}"
           imagePullPolicy: {{ .Values.php.pullPolicy }}

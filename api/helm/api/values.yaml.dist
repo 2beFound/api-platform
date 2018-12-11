@@ -2,10 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-env: prod
+env: beta
 debug: '0'
 secret: ChangeMe
 corsAllowOrigin: http://example.com
+db_name: ChangeMe
+gcloud_project_id: gcloudgoogleid
 
 php:
   repository: quay.io/api-platform/php
@@ -29,7 +31,7 @@ varnish:
 
 ingress:
   annotations:
-    # kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.global-static-ip-name: SetTheName-api-ingress-beta
     # kubernetes.io/tls-acme: "true"
   tls:
     # Secrets must be manually created in the namespace.
