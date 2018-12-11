@@ -1,48 +1,46 @@
 <?php
-
 use Behat\Behat\Context\Context;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
-
+use Behat\Behat\Context\SnippetAcceptingContext;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\SchemaTool;
 /**
- * This context class contains the definitions of the steps used by the demo 
- * feature file. Learn how to get started with Behat and BDD on Behat's website.
- * 
- * @see http://behat.org/en/latest/quick_start.html
+ * Defines application features from the specific context.
  */
-class FeatureContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
+class FeatureContext implements Context, SnippetAcceptingContext
 {
     /**
-     * @var KernelInterface
+     * @var ManagerRegistry
      */
-    private $kernel;
-
+    private $doctrine;
     /**
-     * @var Response|null
+     * @var SchemaTool
      */
-    private $response;
-
-    public function __construct(KernelInterface $kernel)
+    private $schemaTool;
+    /**
+     * @var array
+     */
+    private $classes;
+    /**
+     * Initializes context.
+     *
+     * Every scenario gets its own context instance.
+     * You can also pass arbitrary arguments to the
+     * context constructor through behat.yml.
+     */
+    public function __construct(ManagerRegistry $doctrine)
     {
-        $this->kernel = $kernel;
+        $this->doctrine = $doctrine;
+        $manager = $doctrine->getManager();
+        $this->schemaTool = new SchemaTool($manager);
+        $this->classes = $manager->getMetadataFactory()->getAllMetadata();
     }
-
     /**
-     * @When a demo scenario sends a request to :path
+     * @BeforeScenario @createSchema
      */
-    public function aDemoScenarioSendsARequestTo(string $path)
+    public function createDatabase()
     {
-        $this->response = $this->kernel->handle(Request::create($path, 'GET'));
-    }
-
-    /**
-     * @Then the response should be received
-     */
-    public function theResponseShouldBeReceived()
-    {
-        if ($this->response === null) {
-            throw new \RuntimeException('No response received');
-        }
+        $this->schemaTool->dropSchema($this->classes);
+        $this->doctrine->getManager()->clear();
+        $this->schemaTool->createSchema($this->classes);
     }
 }
