@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * 
  * @see http://behat.org/en/latest/quick_start.html
  */
-class FeatureContext implements Context
+class FeatureContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
     /**
      * @var KernelInterface
