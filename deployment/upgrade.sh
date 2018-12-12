@@ -18,8 +18,8 @@ helm upgrade auth-api-staging --install ./api/helm/api --namespace=beta  \
     --set secret=<SECRET> \
     --set postgresql.enabled=false \
     --set postgresql.url="pgsql://<DBHOST>:<DBPW>@127.0.0.1/<APINAME>?serverVersion=9.6" \
-    --set corsAllowOrigin='^https?://[a-z\]*\.alpinresorts.com$' \
+    --set corsAllowOrigin='^https?://[a-z\]*\.example.com$' \
     --set varnish.enabled=false \
-    --set varnish.url=https://www.alpinresorts.com \
+    --set varnish.url=https://www.example.com \
     --set nameOverride=<APINAME> \
     --recreate-pods
